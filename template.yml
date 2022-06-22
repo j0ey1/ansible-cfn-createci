@@ -7,7 +7,7 @@ Resources:
     Properties:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
-      KeyName: ND9991_CDE
+      KeyName: devops
       ImageId: 'ami-08ae71fd7f1449df1' # you may need to find out what instance types are available in your region - use https://cloud-images.ubuntu.com/locator/ec2/
       InstanceType: t2.micro
   InstanceSecurityGroup:
