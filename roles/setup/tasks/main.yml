@@ -18,6 +18,13 @@
 - name: "install dependencies."
   become: yes
   apt:
+    name: ["libssl-dev", "libssl3"]
+    state: latest
+    update_cache: yes
+
+- name: "install dependencies."
+  become: yes
+  apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
