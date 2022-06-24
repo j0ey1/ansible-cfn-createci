@@ -1,4 +1,6 @@
-configure_infrastructure: 
+version: 2.1
+jobs:
+  configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -8,9 +10,13 @@ configure_infrastructure:
       - run:
           name: Install dependencies
           command: |
-            # install the dependencies needed for your playbook
             apk add --update ansible 
       - run:
           name: Configure server
           command: |
             ansible-playbook -i inventory main4.yml
+
+workflows:
+  cfnFlow:
+    jobs:
+      - configure_infrastructure
