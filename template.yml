@@ -1,4 +1,3 @@
-# Exercise - Rollback
 AWSTemplateFormatVersion: 2010-09-09
 Description: Create ubuntu with embedded cfn script on circleci 
 Resources:
