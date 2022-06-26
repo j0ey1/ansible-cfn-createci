@@ -125,7 +125,7 @@ jobs:
           command: |
             return 1
       - destroy_environment
-        when: on_fail 
+          when: on_fail 
 
   # Exercise: Promote to Production - Job 1 
   # Prerequisite: 
