@@ -1,22 +1,16 @@
-version: 2.1
-jobs:
-  configure_infrastructure: 
+  create_infrastructure: 
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints: ["aa:bc:76:3f:57:34:3d:b9:c0:87:3f:61:3b:72:d8:8f"] # You can get this ID in the section where you registered the SSH Key
       - run:
-          name: Install dependencies
+          name: Create Cloudformation Stack
           command: |
-            apk add --update ansible 
-      - run:
-          name: Configure server
-          command: |
-            ansible-playbook -i inventory main4.yml
-
-workflows:
-  cfnFlow:
-    jobs:
-      - configure_infrastructure
+            aws cloudformation deploy \
+              --template-file template.yml \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+              --region us-east-1
+      # Fail the job intentionally to simulate an error.
+      # Uncomment the line below if you want to fail the current step
+      # - run: return 1
+      #- destroy_environment
