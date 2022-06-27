@@ -1,0 +1,8 @@
+template.yml
+README.md
+main1.yml
+main2.yml
+main3.yml
+main4.yml
+inventory.txt
+roles/**
