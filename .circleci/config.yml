@@ -14,7 +14,7 @@ jobs:
             --parameter-overrides MyBucketName="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
       - run: aws s3 sync . s3://bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7} --delete
   promote_to_production:
-    docker:
+    docker: 
       - image: amazon/aws-cli
     steps:
       - checkout
@@ -35,7 +35,7 @@ jobs:
           name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+            list-exports --query "Exports[?Name==\`udacity-buck-2\`].Value" \
             --no-paginate --output text > ~/textfile.txt
       - persist_to_workspace:
           root: ~/
@@ -58,9 +58,10 @@ workflows:
   switching_routers:
     jobs:
       - create_and_deploy_front_end
-      - promote_to_production:
+      - promote_to_production: 
           requires:
             - create_and_deploy_front_end
+            
       - get_last_deployment_id
       - clean_up_old_front_end:
           requires:
