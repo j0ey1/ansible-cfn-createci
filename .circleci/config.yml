@@ -52,8 +52,8 @@ jobs:
       - run:
           name: Destroy the previous production version's S3 bucket and CloudFormation stack.  
           command: |
-            export udacity-buck-2=$(cat ~/textfile.txt)
-            aws s3 rm s3://udacity-buck-2 --recursive
+            export uda-buck2-v2-e2e6041=$(cat ~/textfile.txt)
+            aws s3 rm s3://uda-buck2-v2-e2e6041 --recursive
 workflows:
   switching_routers:
     jobs:
