@@ -1,34 +1,52 @@
 ---
-- name: "update yum packages."
-  become: true
-  yum:
-    update_cache: true
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
 
 - name: "upgrade packages"
-  become: true
-  yum:
-    name: "*"
+  become: yes
+  apt:
+    upgrade: yes
+
+
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["libssl-dev", "libssl3"]
     state: latest
+    update_cache: yes
+
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
 
 - name: "install pm2"
-  become: true
+  become: yes
   npm:
     name: pm2
-    global: true
-    production: true
+    global: yes
+    production: yes
     state: present
 
-- name: "create ~/web"
-  ansible.builtin.file:
+- name: Creates directory
+  file:
     path: ~/web
     state: directory
-    mode: '0755'
 
-- name: "copy files"
-  copy:
-    src: index.js
-    dest: ~/web
-    backup: true
+- name: Copy index test page
+  template:
+    src: "files/index.js"
+    dest: "~/web/index.js"
 
-- name: "start server"
-  shell: pm2 start ~/web/index.js -f
+- name: Executing node
+  shell: |
+    pm2 start ~/web/index.js -f
