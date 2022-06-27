@@ -11,20 +11,9 @@ jobs:
             aws cloudformation deploy \
             --template-file bucket.yml \
             --stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
-            --parameter-overrides MyBucketName="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
-      - run: aws s3 sync . s3://bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7} --delete
-  promote_to_production:
-    docker: 
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Execute cloudfront.yml
-          command: |
-            aws cloudformation deploy \
-            --template-file cloudfront.yml \
-            --stack-name newprod_version \
-            --parameter-overrides PipelineID="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
+            --parameter-overrides MyBucketName="buckupgrad-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: aws s3 sync . s3://buckupgrad-${CIRCLE_WORKFLOW_ID:0:7}
+
   get_last_deployment_id:
     docker:
       - image: amazon/aws-cli
@@ -41,6 +30,20 @@ jobs:
           root: ~/
           paths: 
             - textfile.txt
+
+  promote_to_production:
+    docker: 
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Execute cloudfront.yml
+          command: |
+            aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name newprod_version \
+            --parameter-overrides PipelineID="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
+
   clean_up_old_front_end:
     docker:
       - image: amazon/aws-cli
@@ -54,15 +57,18 @@ jobs:
           command: |
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm s3://${OldBucketID} --recursive
+
 workflows:
-  switching_routers:
+
+  up_workflow:
+
     jobs:
+
       - create_and_deploy_front_end
       - promote_to_production: 
           requires:
             - create_and_deploy_front_end
-            
-      - get_last_deployment_id
+
       - clean_up_old_front_end:
           requires:
             - get_last_deployment_id
