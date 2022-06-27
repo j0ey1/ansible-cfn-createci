@@ -11,8 +11,8 @@ jobs:
             aws cloudformation deploy \
             --template-file bucket.yml \
             --stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
-            --parameter-overrides MyBucketName="uda-buck2-v2-${CIRCLE_WORKFLOW_ID:0:7}"
-      - run: aws s3 sync . s3://uda-buck2-v2-${CIRCLE_WORKFLOW_ID:0:7} --delete
+            --parameter-overrides MyBucketName="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: aws s3 sync . s3://bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7} --delete
   promote_to_production:
     docker:
       - image: amazon/aws-cli
@@ -23,8 +23,8 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file cloudfront.yml \
-            --stack-name production-distro \
-            --parameter-overrides PipelineID="uda-buck2-v2-${CIRCLE_WORKFLOW_ID:0:7}"
+            --stack-name newprod_version \
+            --parameter-overrides PipelineID="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
   get_last_deployment_id:
     docker:
       - image: amazon/aws-cli
@@ -52,8 +52,8 @@ jobs:
       - run:
           name: Destroy the previous production version's S3 bucket and CloudFormation stack.  
           command: |
-            export uda-buck2-v2-e2e6041=$(cat ~/textfile.txt)
-            aws s3 rm s3://uda-buck2-v2-e2e6041 --recursive
+            export OldBucketID=$(cat ~/textfile.txt)
+            aws s3 rm s3://${OldBucketID} --recursive
 workflows:
   switching_routers:
     jobs:
