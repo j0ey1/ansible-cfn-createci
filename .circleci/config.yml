@@ -11,8 +11,8 @@ jobs:
             aws cloudformation deploy \
             --template-file bucket.yml \
             --stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
-            --parameter-overrides MyBucketName="buckupgrad-${CIRCLE_WORKFLOW_ID:0:7}"
-      - run: aws s3 sync . s3://buckupgrad-${CIRCLE_WORKFLOW_ID:0:7}
+            --parameter-overrides MyBucketName="buckup-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: aws s3 sync . s3://buckup-${CIRCLE_WORKFLOW_ID:0:7}
 
   get_last_deployment_id:
     docker:
@@ -24,7 +24,7 @@ jobs:
           name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`udacity-buck-2\`].Value" \
+            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
             --no-paginate --output text > ~/textfile.txt
       - persist_to_workspace:
           root: ~/
@@ -42,7 +42,7 @@ jobs:
             aws cloudformation deploy \
             --template-file cloudfront.yml \
             --stack-name newprod_version \
-            --parameter-overrides PipelineID="bucket2-upgrade-${CIRCLE_WORKFLOW_ID:0:7}"
+            --parameter-overrides PipelineID="buckup-${CIRCLE_WORKFLOW_ID:0:7}"
 
   clean_up_old_front_end:
     docker:
@@ -55,8 +55,8 @@ jobs:
       - run:
           name: Destroy the previous production version's S3 bucket and CloudFormation stack.  
           command: |
-            export OldBucketID=$(cat ~/textfile.txt)
-            aws s3 rm s3://${OldBucketID} --recursive
+            export udacity-buck-2=$(cat ~/textfile.txt)
+            aws s3 rm s3://udacity-buck-2 --recursive
 
 workflows:
 
